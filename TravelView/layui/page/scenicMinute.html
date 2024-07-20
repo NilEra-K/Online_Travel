@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>最新时间人流量柱状图</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+</head>
+
+<body>
+    <div id="scenicMinute" style="width: 1500px; height: 700px;"></div>
+    <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+    <script>
+        layui.use(['echarts'], function () {
+            var $ = layui.jquery,
+                echarts = layui.echarts;
+            var echartsScenicMinute = echarts.init(document.getElementById('scenicMinute'), 'walden');
+            window.setInterval(() => {
+                $.ajax({
+                    url: "http://localhost:9090/travelserver/scenic/getScenicMinuteData",
+                    method: "GET",
+                    dataType: "JSON",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true,
+                    success: function (latestScenicMinuteData) {
+                        // console.log(latestScenicMinuteData)
+                        var xData = new Array()     // 数量
+                        var yData = new Array()     // 景点
+                        var latestTime = latestScenicMinuteData[0].time;
+                        var formattedTime = `${latestTime.slice(0, 4)}年 ${latestTime.slice(4, 6)}月 ${latestTime.slice(6, 8)}日 ${latestTime.slice(8, 10)} : ${latestTime.slice(10, 12)}`;
+                        for (var i = 0; i < latestScenicMinuteData.length; i++) {
+                            xData.push(latestScenicMinuteData[i].count)
+                            yData.push(latestScenicMinuteData[i].scenic)
+                        }
+                        var option = {
+                            title: {
+                                text: '最新济南各景点人流量',
+                                subtext: '截至' + formattedTime,
+                            },
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'shadow'
+                                }
+                            },
+                            legend: {},
+                            toolbox: { // 添加工具箱
+                                show: true,
+                                feature: {
+                                    dataView: { show: true, readOnly: false },  // 数据视图
+                                    saveAsImage: { show: true }                 // 保存为图片
+                                }
+                            },
+                            grid: {
+                                left: '3%',
+                                right: '4%',
+                                bottom: '3%',
+                                containLabel: true
+                            },
+                            xAxis: {
+                                type: 'value',
+                                boundaryGap: [0, 0.01]
+                            },
+                            yAxis: {
+                                type: 'category',
+                                interval: 'auto', // 自动间隔显示标签
+                                data: yData
+                            },
+                            series: [
+                                {
+                                    name: '人流量',
+                                    type: 'bar',
+                                    data: xData
+                                }
+                            ]
+                        };
+                        echartsScenicMinute.setOption(option);
+                    }
+                })
+            }, 3000);
+        })
+    </script>
+
+</body>
+
+</html>

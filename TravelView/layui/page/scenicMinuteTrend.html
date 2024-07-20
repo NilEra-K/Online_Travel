@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>当天人流量趋势图</title>
+</head>
+
+<body>
+    <div id="scenicMinuteTrend" style="width: 1500px; height: 700px;"></div>
+    <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+    <script>
+        layui.use(['layer', 'echarts'], function () {
+            var $ = layui.jquery,
+                layer = layui.layer,
+                miniTab = layui.miniTab,
+                echarts = layui.echarts;
+
+            var echartsScenicTrend = echarts.init(document.getElementById('scenicMinuteTrend'), 'walden');
+
+            function getline() {
+                $.ajax({
+                    url: "http://localhost:9090/travelserver/scenic/getScenicTrend",
+                    method: "GET",
+                    dataType: "JSON",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true,
+                    success: function (scenicTrend) {
+                        // console.log(scenicTrend)
+                        var times = scenicTrend.time
+                        var series = scenicTrend.series
+                        for (var i = 0; i < series.length; i++) {
+                            series[i]['type'] = 'line'
+                        }
+                        // console.log(series)
+                        var latestTime = times[0];
+                        var formattedTime = `${latestTime.slice(0, 4)}年 ${latestTime.slice(4, 6)}月 ${latestTime.slice(6, 8)}日 ${latestTime.slice(8, 10)} : ${latestTime.slice(10, 12)}`;
+
+                        var option = {
+                            title: {
+                                text: '当天人流量趋势图',
+                                subtext: '截至' + formattedTime,
+                                x: 'left'
+                            },
+                            tooltip: {
+                                trigger: 'axis'
+                            },
+                            grid: {
+                                top: '16%',   // 等价于 y: '16%'
+                                left: '3%',
+                                right: '8%',
+                                bottom: '3%',
+                                // containLabel: true
+                            },
+                            xAxis: {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: times
+                            },
+                            yAxis: {
+                                type: 'value'
+                            },
+                            legend: {
+                                data: series.names,
+                                top: '8%'
+                            },
+                            series: series
+                        };
+                        echartsScenicTrend.setOption(option);
+                    }
+                })
+            }
+            window.setInterval(getline, 3000)
+
+            window.onresize = function() {
+                echartsScenicTrend.resize();
+            }
+        })
+    </script>
+</body>
+
+</html>
