@@ -1,0 +1,30 @@
+server:
+  port: 9090
+  servlet:
+    context-path: /travelserver
+spring:
+  application:
+    name: travelserver
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      url: jdbc:mysql://bigdata:3306/travel?useSSL=false&characterEncoding=UTF-8
+      username: your_username
+      password: your_password
+      driver-class-name: com.mysql.jdbc.Driver
+      initial-size: 1
+      minIdle: 1
+      maxActive: 5
+      maxWait: 6000
+      timeBetweenEvictionRunsMillis: 6000
+      minEvictableIdleTimeMillis: 30000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      filters: stat,wall,log4j
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.nilera.travel.travelweb.entity
+  configuration:
+    map-underscore-to-camel-case: true

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.nilera.travel.travelweb.dao.TravelDao">
+
+
+    <select id="getDaySum" resultType="java.lang.Long">
+        SELECT IFNULL(SUM(min_quantity), 0) AS cnt FROM t_scenic WHERE SUBSTRING(`min_moment`, 1, 8)=DATE_FORMAT(NOW(), "%Y%m%d")
+    </select>
+    <select id="getCurrentSum" resultType="java.lang.Long">
+        SELECT IFNULL(SUM(min_quantity), 0) AS cnt FROM t_scenic WHERE SUBSTRING(`min_moment`, 1, 12)=DATE_FORMAT(NOW(), "%Y%m%d%H%i")
+    </select>
+    <select id="getHeatData" resultType="com.example.nilera.travel.travelweb.entity.Scenic">
+        SELECT longitude AS `lng`, latitude AS `lat`, SUBSTRING(`sec_moment`, 1, 12) AS today, SUM(`sec_quantity`) AS `count`
+        FROM t_heat GROUP BY lng, lat, today HAVING today=DATE_FORMAT(NOW(), '%Y%m%d%H%i')
+    </select>
+    <select id="getScenicMinuteData" resultType="com.example.nilera.travel.travelweb.entity.Scenic">
+        SELECT scenic, min_moment AS `time`, min_quantity AS `count`
+        FROM t_scenic
+        WHERE min_moment = (SELECT MAX(min_moment) FROM t_scenic WHERE <![CDATA[min_moment <= NOW()]]>)
+        GROUP BY scenic, min_moment;
+    </select>
+    <select id="getScenicTread" resultType="com.example.nilera.travel.travelweb.entity.Scenic">
+        SELECT scenic, min_moment AS `time`, min_quantity AS `count`
+        FROM t_scenic
+        WHERE SUBSTRING(`min_moment`, 1, 8)=DATE_FORMAT(NOW(), '%Y%m%d') ORDER BY `time`
+    </select>
+    <select id="getHeatDataByDateAndTime" resultType="com.example.nilera.travel.travelweb.entity.Scenic">
+        SELECT longitude AS `lng`, latitude AS `lat`, SUBSTRING(`sec_moment`, 1, 12) AS day, SUM(`sec_quantity`) AS `count`
+        FROM t_heat GROUP BY lng, lat, day HAVING <![CDATA[day >= #{fromDateAndTime} AND day <= #{toDateAndTime}]]>
+    </select>
+    <select id="getScenicDataByDateAndTime" resultType="com.example.nilera.travel.travelweb.entity.Scenic">
+        SELECT scenic, SUBSTRING(`min_moment`, 1, 12) AS `time`, min_quantity AS `count`
+        FROM t_scenic
+        WHERE <![CDATA[min_moment >= #{fromDateAndTime} AND min_moment <= #{toDateAndTime}]]>
+        GROUP BY `scenic`, `min_moment`;
+    </select>
+    <select id="getScenicTreadByDateAndTime" resultType="com.example.nilera.travel.travelweb.entity.Scenic">
+
+    </select>
+</mapper>

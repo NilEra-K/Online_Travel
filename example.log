@@ -1,0 +1,4 @@
+DEBUG main org.apache.http.impl.conn.PoolingHttpClientConnectionManager - Connection manager is shutting down
+DEBUG main org.apache.http.impl.conn.PoolingHttpClientConnectionManager - Connection manager shut down
+DEBUG main org.apache.http.impl.conn.PoolingHttpClientConnectionManager - Connection manager is shutting down
+DEBUG main org.apache.http.impl.conn.PoolingHttpClientConnectionManager - Connection manager shut down
