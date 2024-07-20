@@ -1,7 +1,5 @@
 # Online_Travel
-OnlineTravelBigdataPlatform
-
-## 🌳 在线旅游大数据平台项目
+## 🌳 在线旅游大数据平台项目 OnlineTravelBigdataPlatform
 <p>
     <label for="file">完成度：</label>
     <progress max="100" value="100"> 100% </progress>
